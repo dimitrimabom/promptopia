@@ -11,6 +11,7 @@
   "dependencies": {
     "bcrypt": "^5.1.1",
     "mongobd": "^0.0.1-security.0",
+    "mongoose": "^8.6.0",
     "mongose": "^0.0.2-security",
     "next": "14.2.7",
     "next-auth": "^4.24.7",

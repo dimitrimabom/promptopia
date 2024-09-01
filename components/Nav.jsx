@@ -9,17 +9,18 @@ const Nav = () => {
 
   const { data: session } = useSession();
 
-  const isUserLoggedIn = true;
-
   const [providers, setProviders] = useState(null);
 
   const [toggleDropdown, setToggleDropdown] = useState(false);
 
   useEffect(() => {
-    (async () => {
-      const res = await getProviders();
-      setProviders(res);
-    })();
+    const setUpProviders = async () => {
+      const response = await getProviders();
+
+      setProviders(response);
+    }
+
+    setUpProviders();
   }, []);
 
   return (
@@ -38,14 +39,14 @@ const Nav = () => {
       {/* Mobile Navigation */}
 
       <div className="hidden sm:flex">
-        {isUserLoggedIn ? (
+        {session?.user ? (
           <div className="flex gap-3 md:gap-5">
             <Link href="/create-prompt" className="black_btn">
               Create Prompt
             </Link>
 
             <button type="button" onClick={signOut} className="outline_btn">
-              Sign Out
+              Log Out
             </button>
 
             <Link href="/profile">
@@ -70,7 +71,7 @@ const Nav = () => {
                   }}
                   className='black_btn'
                 >
-                  Sign in
+                  Sign In
                 </button>
               ))}
           </>
@@ -80,7 +81,7 @@ const Nav = () => {
       {/* Mobile Navigation */}
 
       <div className="sm:hidden flex relative">
-        {isUserLoggedIn ? (
+        {session?.user ? (
           <div className="flex">
             <Image
               src="/assets/images/DimitriMabomLogo.png"
@@ -93,10 +94,10 @@ const Nav = () => {
 
             {toggleDropdown && (
               <div className="dropdown">
-                <Link href="/profile" className="dropdown_link" onClick={() => setToggleDropdown(false)}>
+                <Link href="/profile" className="dropdown_link text-lg" onClick={() => setToggleDropdown(false)}>
                   My Profile
                 </Link>
-                <Link href="/profile" className="dropdown_link" onClick={() => setToggleDropdown(false)}>
+                <Link href="/profile" className="dropdown_link text-lg" onClick={() => setToggleDropdown(false)}>
                   create-prompt
                 </Link>
                 <button
@@ -104,7 +105,7 @@ const Nav = () => {
                   onClick={() => setToggleDropdown(false)}
                   className="black_btn"
                 >
-                  Sign In
+                  Log Out
                 </button>
               </div>
             )}
