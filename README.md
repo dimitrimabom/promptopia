@@ -13,4 +13,4 @@ npx create-next-app@latest ./
 npm install bcrypt mongobd mongose next-auth
 ```
 
-1:39:57
+1:45:15
