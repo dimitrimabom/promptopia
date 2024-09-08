@@ -1,49 +1,35 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { PrismaClient } from "@prisma/client";
 
-import User from "@models/user";
-import { connectToDB } from "@utils/database";
+const prisma = new PrismaClient();
 
-const handler = NextAuth({
-    providers: [
-        GoogleProvider({
-            clientId: process.env.GOOGLE_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        })
-    ],
-    async session({ session }) {
-        const sessionUser = await User.findOne({
-            email: session.user.email
-        })
-
-        session.user.id = sessionUser._id.toString();
-
-        return session;
+export const authOptions = {
+  // Configuration de Google Provider pour l'authentification
+  providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
+  ],
+  // Utilise Prisma comme adaptateur pour NextAuth
+  adapter: PrismaAdapter(prisma),
+  
+  // Option pour stocker les sessions dans un JWT ou une DB
+ 
+  
+  // Gestion des callbacks pour ajouter des infos à la session
+  callbacks: {
+    async session({ session, token }) {
+      // Associe l'ID de l'utilisateur au token de session
+      session.user.id = token.sub;
+      return session;
     },
-    async session({ profile }) {
-        try {
-            await connectToDB();
+  },
+  
+  // Assure-toi d'avoir un secret pour sécuriser l'authentification
+  secret: process.env.NEXTAUTH_SECRET,
+};
 
-            // Check si le user exist
-            const userExists = await User.findOne({
-              email: profile.email
-            });
-
-            // si il n'existe pas, le creer.
-            if (!userExists) {
-                await User.create({
-                  email: profile.email,
-                  username: profile.name.replace(" ", "").toLowercase(),
-                  image: profile.picture,
-                });
-            }
-
-            return true;
-        } catch (error) {
-            console.log(error);
-            return false;
-        }
-    },
-})
-
-export { handler as GET, handler as POST }
+export default NextAuth(authOptions);
