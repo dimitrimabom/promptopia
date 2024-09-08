@@ -10,7 +10,7 @@ npx create-next-app@latest ./
 ```
 
 ```bash
-npm install bcrypt mongobd mongose next-auth
+npm install bcrypt mongobd mongoose next-auth
 ```
 
 1:45:15
